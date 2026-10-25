@@ -1,0 +1,46 @@
+[package]
+name = "nz-player"
+version = "0.1.0"
+description = "Player de áudio local com letras sincronizadas (Tauri v2 + rodio + lrclib)"
+authors = ["nz"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "nz_player_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Áudio: todos os codecs passam pelo Symphonia -> seek confiável em todo formato.
+rodio = { version = "0.20", features = [
+  "symphonia-flac",
+  "symphonia-vorbis",
+  "symphonia-wav",
+  "symphonia-isomp4",
+  "symphonia-aac",
+] }
+
+# Metadados ID3/Vorbis/FLAC + capa embutida.
+lofty = "0.25"
+
+# Cliente HTTP para o lrclib.net (rustls: sem dependência de OpenSSL no Windows).
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time", "sync"] }
+rfd = "0.15"
+base64 = "0.22"
+log = "0.4"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
+panic = "abort"

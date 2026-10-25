@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #07070c;
+  --color-ink-900: #0b0b12;
+  --color-ink-850: #101019;
+  --color-ink-800: #15151f;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink-950);
+  color: #f4f4f5;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* --- scrollbars ------------------------------------------------------- */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.45) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.35);
+  border-radius: 9999px;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.65);
+}
+
+/* --- range inputs ----------------------------------------------------- */
+input[type="range"].nz-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"].nz-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+input[type="range"].nz-range::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+input[type="range"].nz-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.55);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+input[type="range"].nz-range::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  border: none;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.55);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+input[type="range"].nz-range:hover::-webkit-slider-thumb,
+input[type="range"].nz-range:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+}
+input[type="range"].nz-range:hover::-moz-range-thumb,
+input[type="range"].nz-range:focus-visible::-moz-range-thumb {
+  opacity: 1;
+}
+
+@keyframes nz-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.nz-fade-up {
+  animation: nz-fade-up 0.35s ease both;
+}
