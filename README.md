@@ -1,99 +1,90 @@
 # NZ Player 🎵
 
-Player de áudio local (estilo Windows Media Player / Spotify) construído com **Tauri v2** —
-backend em **Rust** (`rodio` + `lofty` + `reqwest`) e frontend **React + Vite + TailwindCSS**,
-com **letras sincronizadas em tempo real** via [lrclib.net](https://lrclib.net).
+A local audio player (Windows Media Player / Spotify style) built with **Tauri v2** — featuring a **Rust backend** (`rodio` + `lofty` + `reqwest`) and a **React + Vite + TailwindCSS frontend**, with **real-time synchronized lyrics** powered by [lrclib.net](https://lrclib.net).
 
-## Stack
+## Tech Stack
 
-| Camada | Tecnologias |
+| Layer | Technologies |
 | --- | --- |
 | Desktop | Tauri v2 (`tauri`, `tauri-build`) |
-| Áudio | `rodio` 0.20 (codecs via Symphonia → *seek* confiável) |
-| Metadados/capas | `lofty` (ID3, Vorbis, FLAC, MP4…) |
-| Rede/letras | `reqwest` (rustls) + `serde` + `serde_json` + `tokio` |
-| Diálogos nativos | `rfd` (arquivos e pastas) |
+| Audio | `rodio` 0.20 (codecs via Symphonia → reliable *seeking*) |
+| Metadata / Album Art | `lofty` (ID3, Vorbis, FLAC, MP4, etc.) |
+| Networking / Lyrics | `reqwest` (rustls) + `serde` + `serde_json` + `tokio` |
+| Native Dialogs | `rfd` (files and folders) |
 | Frontend | React 19 + Vite 6 + TailwindCSS 4 + Lucide + `@tauri-apps/api` |
 
-## Estrutura
+## Project Structure
 
-```
+```text
 .
 ├── index.html
 ├── package.json
 ├── vite.config.ts
-├── scripts/generate-icons.mjs     # gera os ícones PNG/ICO
-├── src/                           # frontend (React)
-│   ├── App.tsx                    # layout + estado global
+├── scripts/generate-icons.mjs     # Generates PNG/ICO icons
+├── src/                           # Frontend (React)
+│   ├── App.tsx                    # Layout + global state
 │   ├── main.tsx / index.css / types.ts
 │   ├── components/
-│   │   ├── TrackList.tsx          # biblioteca / playlist
-│   │   ├── NowPlaying.tsx         # capa + título/artista/álbum
-│   │   ├── TransportControls.tsx  # play/pause/next/prev/stop/repetição/volume
-│   │   ├── ProgressBar.tsx        # seek por clique/arraste
+│   │   ├── TrackList.tsx          # Library / playlist
+│   │   ├── NowPlaying.tsx         # Album art + title/artist/album
+│   │   ├── TransportControls.tsx  # Play/pause/next/previous/stop/repeat/volume
+│   │   ├── ProgressBar.tsx        # Click-and-drag seeking
 │   │   ├── VolumeSlider.tsx
-│   │   └── LyricsPanel.tsx        # letra sincronizada
+│   │   └── LyricsPanel.tsx        # Synchronized lyrics
 │   └── lib/
-│       ├── api.ts                 # wrappers de invoke()
-│       ├── usePlayerStatus.ts     # assina o Channel de status
+│       ├── api.ts                 # invoke() wrappers
+│       ├── usePlayerStatus.ts     # Subscribes to the status Channel
 │       └── format.ts
-└── src-tauri/                     # backend (Rust)
+└── src-tauri/                     # Backend (Rust)
     ├── Cargo.toml
     ├── tauri.conf.json
     ├── capabilities/default.json
     └── src/
         ├── main.rs / lib.rs
         ├── models.rs              # Track, PlayerStatus, RepeatMode, LyricsResult
-        ├── metadata.rs            # lofty: tags, duração, capa, varredura de pastas
-        ├── player.rs              # thread de áudio (OutputStream + Sink) + comandos
-        ├── lyrics.rs              # lrclib.net + parser LRC
-        └── commands.rs            # comandos Tauri expostos ao frontend
+        ├── metadata.rs            # lofty: tags, duration, album art, folder scanning
+        ├── player.rs              # Audio thread (OutputStream + Sink) + commands
+        ├── lyrics.rs              # lrclib.net + LRC parser
+        └── commands.rs            # Tauri commands exposed to the frontend
 ```
 
-## Como rodar
+## Getting Started
 
 ```bash
-# 1. ícones (uma única vez)
+# 1. Generate icons (one-time setup)
 npm run icons
 
-# 2. dependências
+# 2. Install dependencies
 npm install
 
-# 3. modo desenvolvimento (Vite + Tauri)
+# 3. Run in development mode (Vite + Tauri)
 npm run tauri dev
 
-# 4. build de produção
+# 4. Build for production
 npm run tauri build
 ```
 
-> Requisitos: Rust (stable) + Node 18+. No Windows, o WebView2 já costuma estar instalado.
+> **Requirements:** Rust (stable) + Node.js 18+. On Windows, WebView2 is usually already installed.
 
-## Funcionalidades
+## Features
 
-- **Playback**: play, pause, stop, próxima, anterior; barra de progresso clicável/arrastável
-  com tempo atual/total; volume com ícone + slider; modos de repetição (desligada / tudo / uma).
-- **Biblioteca**: adicionar arquivos ou pastas inteiras pelo diálogo nativo, lista com
-  título/artista/álbum/duração, remoção individual, limpar lista, duplo clique para tocar e
-  destaque da faixa atual.
-- **Interface**: capa extraída das tags, metadados em destaque, tema escuro moderno e
-  responsivo, atalho de `Espaço` para play/pause.
-- **Letras (destaque)**: o backend consulta `lrclib.net/api/get` (com *fallback* para
-  `/api/search`), faz o parser do formato LRC (`[mm:ss.xx]`, múltiplos timestamps, metadados),
-  devolve as linhas já com `time_ms` e o frontend destaque/rolagem automática da linha atual —
-  sincronia via `Channel<PlayerStatus>` atualizado a cada 200 ms.
-  Sem letra: mensagem amigável + botão "Tentar novamente".
+- **Playback:** Play, pause, stop, next, and previous; clickable/draggable progress bar with current and total playback time; volume control with icon and slider; repeat modes (off / repeat all / repeat one).
+- **Music Library:** Add individual files or entire folders using the native file dialog; track list displaying title, artist, album, and duration; remove individual tracks, clear the entire list, double-click to play, and highlight the currently playing track.
+- **Interface:** Album art extracted from metadata tags; prominently displayed metadata; modern, responsive dark theme; `Space` keyboard shortcut for play/pause.
+- **Lyrics (Key Feature):** The backend queries `lrclib.net/api/get` (with a fallback to `/api/search`), parses the LRC format (`[mm:ss.xx]`, multiple timestamps, metadata), and returns lines with their corresponding `time_ms` values. The frontend highlights the current line and automatically scrolls as the song progresses. Synchronization is handled through `Channel<PlayerStatus>`, updated every 200 ms.
 
-## Fluxo de tempo real
+  When lyrics are unavailable, a friendly message is displayed along with a "Try Again" button.
 
-```
-thread de áudio ──(status a cada 50ms)──▶ Arc<Mutex<PlayerStatus>>
-                                              │
-comando Tauri ──▶ UnboundedSender<Cmd> ──▶ motor (loop 50ms)
-                                              │
-                          watch_status(Channel) ──▶ 200ms ──▶ React
-                                              │
-                          fetch_lyrics ──▶ lrclib.net ──▶ parser LRC
+## Real-Time Data Flow
+
+```text
+audio thread ──(status every 50ms)──▶ Arc<Mutex<PlayerStatus>>
+                                           │
+Tauri command ──▶ UnboundedSender<Cmd> ──▶ engine (50ms loop)
+                                           │
+                       watch_status(Channel) ──▶ 200ms ──▶ React
+                                           │
+                       fetch_lyrics ──▶ lrclib.net ──▶ LRC parser
 ```
 
-A posição é lida com `Sink::get_pos()` (congela corretamente no pause e é reposicionada no
-*seek*), somada a um `offset` usado apenas no *fallback* de recarregamento do arquivo.
+The playback position is retrieved using `Sink::get_pos()` (which correctly freezes when paused and is updated when seeking), combined with an `offset` used exclusively as a fallback when reloading the audio file.
